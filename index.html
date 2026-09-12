@@ -68,6 +68,7 @@
     box-shadow: 0 3px 12px rgba(30,60,90,.06);
     transition: transform .15s ease, box-shadow .15s ease;
   }
+  .card-button { font: inherit; text-align: left; cursor: pointer; width: 100%; }
   .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 7px 20px rgba(30,60,90,.12);
@@ -124,12 +125,19 @@
     cursor: pointer;
     font-weight: 600;
   }
-  #tally-frame {
-    display: block;
+  #tally-container {
     width: 100%;
-    height: 900px;
+    background: #ffffff;
     border: 1px solid #dfe7ee;
     border-radius: 0 0 14px 14px;
+    overflow: hidden;
+    min-height: 300px;
+  }
+  #tally-container iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    min-height: 500px;
     background: #ffffff;
   }
 
@@ -175,13 +183,13 @@
 <main class="grid">
 
   <!-- Replace the # in href with your actual Tally form link -->
-  <a class="card" href="https://tally.so/r/xXAper" onclick="openForm(event, this.href)">
+  <button class="card card-button" type="button" onclick="openForm('https://tally.so/r/xXAper')">
     <div class="icon">🦺</div>
     <div>
       <h2>PTW Audit</h2>
       <p>Permit to Work audit inspection</p>
     </div>
-  </a>
+  </button>
 
   <a class="card" href="#" target="_blank" rel="noopener">
     <div class="icon">🏗️</div>
@@ -231,7 +239,7 @@
     <h2 id="form-title">PTW Audit</h2>
     <button type="button" class="close-btn" onclick="closeForm()">Close ×</button>
   </div>
-  <iframe id="tally-frame" title="PTW Audit Form" src="about:blank" loading="lazy"></iframe>
+  <div id="tally-container"></div>
 </section>
 
 <footer class="footer">
@@ -240,19 +248,39 @@
 
 
 <script>
-function openForm(event, url) {
-  event.preventDefault();
+function openForm(url) {
   const panel = document.getElementById('form-panel');
-  const frame = document.getElementById('tally-frame');
-  frame.src = url;
+  const container = document.getElementById('tally-container');
+
+  // Tally's official embed format with dynamicHeight removes the
+  // nested scrollbar and lets the form resize as the user moves
+  // through the multi-page form.
+  container.innerHTML =
+    '<iframe data-tally-src="https://tally.so/embed/xXAper?dynamicHeight=1&hideTitle=1&transparentBackground=1" ' +
+    'loading="lazy" width="100%" height="500" frameborder="0" marginheight="0" marginwidth="0" ' +
+    'title="PTW Audit"></iframe>';
+
   panel.classList.add('open');
+
+  if (window.Tally) {
+    window.Tally.loadEmbeds();
+  } else if (!document.querySelector('script[src="https://tally.so/widgets/embed.js"]')) {
+    const script = document.createElement('script');
+    script.src = 'https://tally.so/widgets/embed.js';
+    script.onload = function() {
+      if (window.Tally) window.Tally.loadEmbeds();
+    };
+    document.body.appendChild(script);
+  }
+
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
 function closeForm() {
   const panel = document.getElementById('form-panel');
-  const frame = document.getElementById('tally-frame');
+  const container = document.getElementById('tally-container');
   panel.classList.remove('open');
-  frame.src = 'about:blank';
+  container.innerHTML = '';
 }
 </script>
 
