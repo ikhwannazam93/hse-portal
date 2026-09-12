@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penta-Ocean HSE Portal</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f8fb;
+    color: #16324f;
+  }
+  .header {
+    background: #ffffff;
+    padding: 22px 20px 18px;
+    text-align: center;
+    border-bottom: 1px solid #dfe7ee;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+  .logo span { font-weight: 400; }
+  .accent {
+    width: 70px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: #1976b9;
+    border-radius: 3px;
+  }
+  .hero {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 34px 20px 20px;
+    text-align: center;
+  }
+  h1 {
+    margin: 0;
+    font-size: 32px;
+  }
+  .subtitle {
+    margin: 10px 0 0;
+    color: #607487;
+    font-size: 16px;
+  }
+  .grid {
+    max-width: 900px;
+    margin: 10px auto 50px;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 105px;
+    padding: 20px;
+    background: white;
+    border: 1px solid #dfe7ee;
+    border-radius: 14px;
+    text-decoration: none;
+    color: #16324f;
+    box-shadow: 0 3px 12px rgba(30,60,90,.06);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(30,60,90,.12);
+  }
+  .icon {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: #eaf4fb;
+    font-size: 27px;
+  }
+  .card h2 {
+    margin: 0 0 5px;
+    font-size: 18px;
+  }
+  .card p {
+    margin: 0;
+    color: #718292;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .form-panel {
+    display: none;
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+  .form-panel.open { display: block; }
+  .form-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    background: #ffffff;
+    border: 1px solid #dfe7ee;
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    padding: 14px 18px;
+  }
+  .form-panel-head h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+  .close-btn {
+    border: 1px solid #d1dbe4;
+    background: #ffffff;
+    color: #16324f;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  #tally-frame {
+    display: block;
+    width: 100%;
+    height: 900px;
+    border: 1px solid #dfe7ee;
+    border-radius: 0 0 14px 14px;
+    background: #ffffff;
+  }
+
+  .footer {
+    position: relative;
+    overflow: hidden;
+    background: #ffffff;
+    border-top: 1px solid #dfe7ee;
+    padding: 24px 20px 34px;
+    text-align: center;
+    color: #718292;
+    font-size: 12px;
+  }
+  .footer::after {
+    content: "";
+    position: absolute;
+    left: -5%;
+    right: -5%;
+    bottom: -45px;
+    height: 75px;
+    background: #1976b9;
+    border-radius: 50% 50% 0 0 / 35% 35% 0 0;
+  }
+  @media (max-width: 650px) {
+    h1 { font-size: 27px; }
+    .grid { grid-template-columns: 1fr; }
+    .card { min-height: 92px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">PENTA-OCEAN <span>CONSTRUCTION</span></div>
+  <div class="accent"></div>
+</header>
+
+<section class="hero">
+  <h1>HSE PORTAL</h1>
+  <p class="subtitle">Safety Inspection &amp; Reporting</p>
+</section>
+
+<main class="grid">
+
+  <!-- Replace the # in href with your actual Tally form link -->
+  <a class="card" href="https://tally.so/r/xXAper" onclick="openForm(event, this.href)">
+    <div class="icon">🦺</div>
+    <div>
+      <h2>PTW Audit</h2>
+      <p>Permit to Work audit inspection</p>
+    </div>
+  </a>
+
+  <a class="card" href="#" target="_blank" rel="noopener">
+    <div class="icon">🏗️</div>
+    <div>
+      <h2>HSE Site Inspection</h2>
+      <p>General site safety inspection</p>
+    </div>
+  </a>
+
+  <a class="card" href="#" target="_blank" rel="noopener">
+    <div class="icon">⚠️</div>
+    <div>
+      <h2>Hazard Report</h2>
+      <p>Report unsafe conditions and hazards</p>
+    </div>
+  </a>
+
+  <a class="card" href="#" target="_blank" rel="noopener">
+    <div class="icon">🚨</div>
+    <div>
+      <h2>Incident / Near Miss</h2>
+      <p>Submit incident and near-miss information</p>
+    </div>
+  </a>
+
+  <a class="card" href="#" target="_blank" rel="noopener">
+    <div class="icon">📋</div>
+    <div>
+      <h2>Toolbox Meeting</h2>
+      <p>Record toolbox meeting attendance and topics</p>
+    </div>
+  </a>
+
+  <a class="card" href="#" target="_blank" rel="noopener">
+    <div class="icon">🔧</div>
+    <div>
+      <h2>Equipment Inspection</h2>
+      <p>Inspect tools, equipment and machinery</p>
+    </div>
+  </a>
+
+</main>
+
+
+<section id="form-panel" class="form-panel" aria-label="HSE Form">
+  <div class="form-panel-head">
+    <h2 id="form-title">PTW Audit</h2>
+    <button type="button" class="close-btn" onclick="closeForm()">Close ×</button>
+  </div>
+  <iframe id="tally-frame" title="PTW Audit Form" src="about:blank" loading="lazy"></iframe>
+</section>
+
+<footer class="footer">
+  Penta-Ocean HSE Portal
+</footer>
+
+
+<script>
+function openForm(event, url) {
+  event.preventDefault();
+  const panel = document.getElementById('form-panel');
+  const frame = document.getElementById('tally-frame');
+  frame.src = url;
+  panel.classList.add('open');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeForm() {
+  const panel = document.getElementById('form-panel');
+  const frame = document.getElementById('tally-frame');
+  panel.classList.remove('open');
+  frame.src = 'about:blank';
+}
+</script>
+
+</body>
+</html>
