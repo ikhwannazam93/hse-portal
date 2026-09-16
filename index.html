@@ -770,6 +770,251 @@ function closeForm() {
   container.innerHTML = '';
 }
 </script>
+<style>
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #f4f8fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
 
+  .login-box {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 40px;
+    box-shadow: 0 15px 45px rgba(0, 55, 100, 0.15);
+    text-align: center;
+  }
+
+  .login-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    background: #176bb0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 800;
+  }
+
+  .login-box h2 {
+    margin: 0 0 8px;
+    color: #123f6a;
+    font-size: 28px;
+  }
+
+  .login-box p {
+    color: #66788a;
+    margin-bottom: 28px;
+  }
+
+  .login-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 15px;
+    margin-bottom: 14px;
+    border: 1px solid #d5e0ea;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+  }
+
+  .login-box input:focus {
+    border-color: #176bb0;
+  }
+
+  .login-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #176bb0;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .login-button:hover {
+    background: #125891;
+  }
+
+  #login-message {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #d33;
+    min-height: 20px;
+  }
+
+  #user-bar {
+    display: none;
+    position: fixed;
+    top: 10px;
+    right: 15px;
+    z-index: 9998;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+    font-size: 13px;
+  }
+
+  #logout-button {
+    margin-left: 10px;
+    border: none;
+    background: #e74c3c;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+</style>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">PO</div>
+
+    <h2>HSE PORTAL</h2>
+    <p>Sign in to access the PENTA-OCEAN HSE Portal</p>
+
+    <input
+      type="email"
+      id="login-email"
+      placeholder="Email address"
+      autocomplete="email"
+    >
+
+    <input
+      type="password"
+      id="login-password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button class="login-button" onclick="loginUser()">
+      SIGN IN
+    </button>
+
+    <div id="login-message"></div>
+  </div>
+</div>
+
+<div id="user-bar">
+  <span id="logged-user"></span>
+  <button id="logout-button" onclick="logoutUser()">Logout</button>
+</div>
+
+<script>
+  async function loginUser() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const message = document.getElementById('login-message');
+
+    message.textContent = '';
+
+    if (!email || !password) {
+      message.textContent = 'Please enter your email and password.';
+      return;
+    }
+
+    message.textContent = 'Signing in...';
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) {
+      message.textContent = error.message;
+      return;
+    }
+
+    const { data: profile, error: profileError } =
+      await supabaseClient
+        .from('profiles')
+        .select('full_name, username, role, status')
+        .eq('id', data.user.id)
+        .single();
+
+    if (profileError) {
+      message.textContent = 'Unable to load your user profile.';
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    if (profile.status !== 'active') {
+      message.textContent = 'Your account is not active.';
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    document.getElementById('login-screen').style.display = 'none';
+
+    document.getElementById('user-bar').style.display = 'block';
+
+    const displayName =
+      profile.full_name ||
+      profile.username ||
+      data.user.email;
+
+    document.getElementById('logged-user').textContent =
+      displayName + ' (' + profile.role + ')';
+  }
+
+  async function logoutUser() {
+    await supabaseClient.auth.signOut();
+
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('user-bar').style.display = 'none';
+
+    document.getElementById('login-password').value = '';
+  }
+
+  async function checkExistingSession() {
+    const { data } = await supabaseClient.auth.getSession();
+
+    if (!data.session) {
+      document.getElementById('login-screen').style.display = 'flex';
+      return;
+    }
+
+    const user = data.session.user;
+
+    const { data: profile } =
+      await supabaseClient
+        .from('profiles')
+        .select('full_name, username, role, status')
+        .eq('id', user.id)
+        .single();
+
+    if (!profile || profile.status !== 'active') {
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('user-bar').style.display = 'block';
+
+    const displayName =
+      profile.full_name ||
+      profile.username ||
+      user.email;
+
+    document.getElementById('logged-user').textContent =
+      displayName + ' (' + profile.role + ')';
+  }
+
+  checkExistingSession();
+</script>
 </body>
 </html>
